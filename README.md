@@ -31,3 +31,8 @@ A5:INSERT 操作throughput 很低的时候，cluster的cpu很低，disk IO 也�
 将compaction 速度设置为2 倍，延迟compcation，发现不会出现上述问题。
 另外一个方面说明集群不具备处理当前这样的插入负载，所以应该调低插入的速度，测试得到目前环境多能承载的负载
 
+Q6.节点down掉后，重新启动状态为UJ，而不是UN
+
+A6:
+nodetool netstats可以看到seed node 在发送文件到当前节点。
+类似ma-46-big-Data.db  这样的文件。文件数目很多，造成节点还是在join 状态
