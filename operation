@@ -1,0 +1,19 @@
+1.创建大数据
+需要首先创建keyspace 和table schema
+create SSTable
+CQLSSTableWriter.Builder build = CQLSSTableWriter.builder();
+		File outDir = new File(keyspace + File.separator + table);
+		if (!outDir.exists() && outDir.mkdirs()) {
+			throw new Exception("no dir");
+		}
+		build.inDirectory(outDir).forTable(schema).using(insert).withPartitioner(new Murmur3Partitioner());
+		CQLSSTableWriter write = build.build();
+		for (int i = 0; i <index; i++) {
+			write.addRow();
+		}
+		write.close();
+需要cassandra/lib 下面的jar
+然后在cassandra/bin目录下面
+sstableloader -d host $sstable_file_path
+
+注意cass3.4之前，index 和view不能在开始时创建，否则导入数据不成功
