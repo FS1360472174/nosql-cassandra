@@ -1,0 +1,4 @@
+一.设置一致性可以使用setConsistency,也可以使用
+queryOptions，来整体设置
+
+二.session与cluster不关闭会有什么影响
