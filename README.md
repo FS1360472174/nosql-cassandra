@@ -39,3 +39,9 @@ nodetool netstats可以看到seed node 在发送文件到当前节点。
 
 Q7:local_one,local_quorum 对于多数据中心，应用程序是如何来判断是本地数据中心。
 需要程序来指明吗
+
+Q8:cassandra 每个节点都知道其他节点的数据分布情况。
+是对每个table的在每个节点上都维护一个map表，还是直接根据hash值来判断。
+
+如果是根据hash值，那么加入新节点，新节点获取新key，将原有节点的数据copy过来，然后将旧的节点key值清掉。
+问题是如果复制因子是3.
