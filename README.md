@@ -36,3 +36,6 @@ Q6.节点down掉后，重新启动状态为UJ，而不是UN
 A6:
 nodetool netstats可以看到seed node 在发送文件到当前节点。
 类似ma-46-big-Data.db  这样的文件。文件数目很多，造成节点还是在join 状态
+
+Q7:local_one,local_quorum 对于多数据中心，应用程序是如何来判断是本地数据中心。
+需要程序来指明吗
