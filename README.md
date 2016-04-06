@@ -51,4 +51,17 @@ Q8:cassandra 每个节点都知道其他节点的数据分布情况。
 现在添加了节点6，4的部分数据移到6上去，数据的第一个副本移到了6上去了。
 数据的其他两个副本在5,1上面，这时候如何知道数据的其他两个副本呢
 
+A8.
+每个节点上对写入的数据都维护一份映射表，这是为什么每个节点都可以作为coordinate的原因。
+read的时候并不是先根据partition key找第一份数据，然后根据replication strategy 去找其他replication。
+coordinate 直接向所有replication发送请求。
+nodetool getendpoint keyspace table partitionkey 
+既可以查找每份数据存放在哪些node上面
 Q9.一个decommissed 的节点重新加入和一个新节点加入有什么区别
+
+Q10.在做cassandra 线性增长性能测试时，发现增长的速度并不是100%,
+eg 3 nodes增长到6 nodes,throughput 并没有增长一倍，只是增加了50%.
+但是也是线性增长的。
+
+100%的增长是理想化的，但如何提高这个比例，或者说是什么限制了增长。
+增加了节点，单个节点的处理能力下降了，这是什么因素造成的。
