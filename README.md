@@ -65,3 +65,7 @@ eg 3 nodes增长到6 nodes,throughput 并没有增长一倍，只是增加了50%
 
 100%的增长是理想化的，但如何提高这个比例，或者说是什么限制了增长。
 增加了节点，单个节点的处理能力下降了，这是什么因素造成的。
+
+Q11.使用jmeter作为client，发送write请求。
+write throughput 线性降低。
+
