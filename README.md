@@ -69,3 +69,5 @@ eg 3 nodes增长到6 nodes,throughput 并没有增长一倍，只是增加了50%
 Q11.使用jmeter作为client，发送write请求。
 write throughput 线性降低。
 
+Q12.cassandra 支持远程debug吗？如何配置
+如何查看class文件是否支持debug
