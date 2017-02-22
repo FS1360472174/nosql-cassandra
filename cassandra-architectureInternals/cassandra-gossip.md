@@ -1,23 +1,12 @@
-Gossiper负责确保系统的每个节点都知道其他节点的状态
-Gossiper 是一个定时任务。每隔1s执行
+内部节点通信(gossip)
 
-1.Gossip to 随机的活的endpoint
-2.Gossip 随机的一个不能到达的endpoint
-3.如果1gossip到的不是seed。或者存活的节点比seeds数量少，gossip 到一个
-随机一个seed节点。
+Gossip 是一个对等网络通信协议，节点间断性的交换他们自身的状态信息以及其他他们知道的节点信息。gossip 每秒中和集群中最多三个节点交换信息。交换他们自身信息，和通过之前的gossip通信了解的其他节点信息，所以所有的节点能够很快的了解集群中的其他节点状况。一条gossip 信息会有一个相关联的版本号，因此当进行gossip交换的时候，对于一个特定的节点，它的老信息就会被最近的状态所覆盖。
 
-**数据结构**
+为了阻止gossip通信的问题，集群中所有的节点都有相同的seed nodes列表。这一点在一个节点第一次启动的时候尤其重要。默认情况下，一个节点在随后的重启过程中能够记住已经gossip的其他节点。seed node就是为了新节点加入到集群中，bootstrap过程中使用的。不是为了单点失败，也没有其他特别的目的。
 
-HeartBeatState
-generation and version number.
+**注意:** 在多数据中心集群环境，确保每个数据中心至少有一个节点在seed list中。为了容错建议每个数据中心指派多个seed node,否则当一个节点bootstrap时，需要同其他数据中心gossip。
 
-**Gossip 交换**
+不建议把每个节点都设置为seed node,因为会增加维护的成本以及降低了gossip的性能。gossip优化并不是特别重要，但是建议使用一个小的seed 列表(每个数据中心3个节点最佳)
 
-发送GossipDigestSynMessage和应答GossipDigestAckMessage
+失败检测和恢复
 
-
-**参考：**
-
-[https://wiki.apache.org/cassandra/ArchitectureInternals](https://wiki.apache.org/cassandra/ArchitectureInternals)
-[http://blog.csdn.net/yfkiss/article/details/6943682/](http://blog.csdn.net/yfkiss/article/details/6943682/)
-[http://tianya23.blog.51cto.com/1081650/530743](http://tianya23.blog.51cto.com/1081650/530743)
