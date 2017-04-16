@@ -1,0 +1,8 @@
+#compiled class file
+*.class
+
+# Log file
+*.log
+
+# build file
+build/*
