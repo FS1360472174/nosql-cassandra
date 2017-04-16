@@ -16,4 +16,5 @@ public class CassandraService {
 			System.out.println("start cassandra failed" + e);
 		}
 	}
+	
 }

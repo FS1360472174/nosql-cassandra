@@ -15,24 +15,25 @@ import com.datastax.driver.mapping.Mapper;
 import com.datastax.driver.mapping.MappingManager;
 
 public class PersonDaoImpl implements PersonDao {
+	Session session = DaoUtil.getSession();
 
-	public static final String db = "test.person";
-	
-	public PersonDaoImpl(){
+	public PersonDaoImpl() {
 		
 	}
 
 	@Override
 	public void create(Person person) {
-		// TODO Auto-generated method stub
-
+		System.out.println("insert person:" + person);
+		PreparedStatement ps = session.prepare("insert into " + Person.DB + "." + Person.TABLE + "(id, name, description)values(?,?,?)");
+		BoundStatement bs = new BoundStatement(ps);
+		session.execute(bs.bind(person.getId(),person.getName(),person.getDescription()));
 	}
 
 	@Override
 	public Person queryById(String id) {
+		System.out.println("query person by id:" + id);
 		Person person = null;
-		Session session = DaoUtil.getSession();
-		PreparedStatement ps = session.prepare("select * from " + db + " where id = ? ");
+		PreparedStatement ps = session.prepare("select * from " + Person.DB + "." + Person.TABLE + " where id = ? ");
 		ps.setConsistencyLevel(ConsistencyLevel.ALL).enableTracing();
 		BoundStatement bs = new BoundStatement(ps);
 		ResultSet rs = session.execute(bs.bind(id));
@@ -46,7 +47,7 @@ public class PersonDaoImpl implements PersonDao {
 		ExecutionInfo execInfo = rs.getExecutionInfo();
 		QueryTrace queryTrace = execInfo.getQueryTrace();
 		System.out.println("querTrace:" + queryTrace);
-		
+
 		return person;
 	}
 

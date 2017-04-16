@@ -20,4 +20,19 @@ public class DaoUtil {
 	public static Session getSession() {
 		return session;
 	}
+
+	public static void close() {
+		session.close();
+		cluster.close();
+	}
+
+	public static void createKeyspace(String keyspace) {
+		session.execute("CREATE KEYSPACE IF NOT EXISTS " + keyspace
+				 + " WITH replication={'class': 'SimpleStrategy', 'replication_factor':1};");
+	}
+
+	public static void createTable(String keyspace, String table) {
+		session.execute("CREATE TABLE IF NOT EXISTS " + keyspace + "." + table +
+				" (id text, name text, description text, PRIMARY KEY(id));");
+	}
 }

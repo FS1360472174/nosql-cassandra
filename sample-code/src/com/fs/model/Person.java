@@ -1,7 +1,23 @@
 package com.fs.model;
 
+import com.datastax.driver.mapping.annotations.Table;
+
+@Table(keyspace = "test", name = "person")
 public class Person {
+	public static final String DB = "test";
+	public static final String TABLE = "person";
+
 	private String id;
+	private String name;
+	private String description;
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
 	public String getId() {
 		return id;
@@ -19,14 +35,4 @@ public class Person {
 		this.name = name;
 	}
 
-	public String getDesc() {
-		return desc;
-	}
-
-	public void setDesc(String desc) {
-		this.desc = desc;
-	}
-
-	private String name;
-	private String desc;
 }
