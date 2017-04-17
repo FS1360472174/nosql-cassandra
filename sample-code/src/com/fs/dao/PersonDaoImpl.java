@@ -1,5 +1,6 @@
 package com.fs.dao;
 
+import java.text.SimpleDateFormat;
 import java.util.Iterator;
 
 import com.datastax.driver.core.BoundStatement;
@@ -18,15 +19,16 @@ public class PersonDaoImpl implements PersonDao {
 	Session session = DaoUtil.getSession();
 
 	public PersonDaoImpl() {
-		
+
 	}
 
 	@Override
 	public void create(Person person) {
 		System.out.println("insert person:" + person);
-		PreparedStatement ps = session.prepare("insert into " + Person.DB + "." + Person.TABLE + "(id, name, description)values(?,?,?)");
+		PreparedStatement ps = session
+				.prepare("insert into " + Person.DB + "." + Person.TABLE + "(id, name, description)values(?,?,?)");
 		BoundStatement bs = new BoundStatement(ps);
-		session.execute(bs.bind(person.getId(),person.getName(),person.getDescription()));
+		session.execute(bs.bind(person.getId(), person.getName(), person.getDescription()));
 	}
 
 	@Override
@@ -44,9 +46,18 @@ public class PersonDaoImpl implements PersonDao {
 			person = mapper.map(rs).all().get(0);
 		}
 		// Trace from DB
-		ExecutionInfo execInfo = rs.getExecutionInfo();
-		QueryTrace queryTrace = execInfo.getQueryTrace();
-		System.out.println("querTrace:" + queryTrace);
+		QueryTrace queryTrace = rs.getExecutionInfo().getQueryTrace();
+
+		System.out.printf("Trace id: %s\n\n", queryTrace.getTraceId());
+		System.out.printf("%-42s | %-12s | %-10s \n", "activity", "timestamp", "source");
+
+		System.out.println("-------------------------------------------");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
+
+		for (QueryTrace.Event event : queryTrace.getEvents()) {
+			System.out.printf("%42s | %12s | %10s\n", event.getDescription(), dateFormat.format((event.getTimestamp())),
+					event.getSource());
+		}
 
 		return person;
 	}

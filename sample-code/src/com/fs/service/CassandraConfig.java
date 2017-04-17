@@ -12,6 +12,7 @@ import org.apache.cassandra.locator.SimpleSeedProvider;
 
 public class CassandraConfig implements ConfigurationLoader {
 
+	
 	static final String COMMITLOG_FOLDER = "build/cassandra/commitlog";
 	static final String HINT_FOLDER = "build/cassandra/hint";
 	static final String SAVED_CACHE = "build/cassandra/saved_caches";
@@ -37,6 +38,8 @@ public class CassandraConfig implements ConfigurationLoader {
 		config.storage_port = 7010;
 		config.rpc_address = "localhost";
 		config.start_native_transport = true;
+		config.memtable_offheap_space_in_mb = 256;
+		config.memtable_heap_space_in_mb = 256;
 
 		return config;
 	}
