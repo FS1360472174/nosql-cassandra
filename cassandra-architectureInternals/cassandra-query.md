@@ -1,11 +1,11 @@
-#摘要#
+# 摘要 #
 CQL相比较于SQL有很多的限制，原因在于cassandra是为大数据存储设计的，而它的部署模式又都是基于分区方式的，不像mongo还有复制集这个小规模的数据库集群设计，当数据量大的时候再进行分片。为了提供检索效率，所以在CQL语法上做了限制，避免低效的查询语句。cassandra的数据是根据partition key做hash计算后分布到各个节点的，扫描各个节点的效率是很低的。所以cassandra query检索的一个基本原则就是尽可能的查找少的节点。
 
-#CQL#
+# CQ L#
 
-##概览##
+## 概览 ##
 
-关系型数据是行的集合，Cassandra是分区的集合，如果没有clustering key的话，每个分区就是单行，一个分区包含多行的话就叫做宽行(wide-row)。cassandra 根据partition key的hash value来决定数据存储在哪个节点，这个相当于是hash索引，所以不能进行范围查询。然后在每个分区根据clustering key来排序，
+关系型数据库是行的集合，Cassandra是分区的集合，如果没有clustering key的话，每个分区就是单行，一个分区包含多行的话就叫做宽行(wide-row)。cassandra 根据partition key的hash value来决定数据存储在哪个节点，这个相当于是hash索引，所以不能进行范围查询。然后在每个分区根据clustering key来排序，
 这个不是基于hash的，所以可以根据范围来查询。以下表为例，node为partition key,(date,number)是clustering key.
  
 	CREATE KEYSPACE test WITH REPLICATION = {
@@ -26,7 +26,7 @@ CQL相比较于SQL有很多的限制，原因在于cassandra是为大数据存�
 
 
 | node | date | number | name|
-| ------------- |:-------------:| -----:|-----:|
+| ------------- |-------------| -----|-----|
 | n1 | feb | 1 | name1|
 | n1 | feb | 2 | name2|
 | n2 | feb | 1 | name3|
@@ -45,7 +45,7 @@ partition2
 
   	{
 		date:feb {number:1 {name:name3}} 
-				 {number:2 {name:name5}}
+				 {number:2 {name:name4}}
 	}
 
 > cassandra 的列不固定，所以列名也要存。
@@ -62,35 +62,36 @@ partition2
 
 - 范围查询>,<
 
-**partition key**
+	**partition key**
+	
+	Cassandra是基于partition key的hash分步数据的，所以不支持范围查询。
+	允许在partition key的字段上面利用token函数来进行范围查询。
+	
+		SELECT * FROM log WHERE token(node) > token('1') 
 
-Cassandra是基于partition key的hash分步数据的，所以不支持范围查询。
-允许在partition key的字段上面利用token函数来进行范围查询。
+	> 注：分区器ByteOrderedPartitioner是有序分布数据的，所以理论上应该可以支持范围查询，但是使用这种分区器容易导致数据分布的不平衡，所以一搬不推荐使用
 
-	SELECT * FROM log WHERE token(node) > token('1') 
+	**clustering key**
 
-> 注：分区器ByteOrderedPartitioner是有序分布数据的，所以理论上应该可以支持范围查询，但是使用这种分区器容易导致数据分布的不平衡，所以一搬不推荐使用
+	单列的话，范围查询只能用于最后一列。前面的列必须要给定
 
-**clustering key**
+		SELECT *FROM log WHERE node = '1' AND date >='date1'
+		
+		SELECT *FROM log WHERE node = '1' AND date = 'date' AND number >=1
 
-单列的话，范围查询只能用于最后一列。前面的列必须要给定
+	无效的就是这种
 
-	SELECT *FROM log WHERE node = '1' AND date >='date1'
-
-	SELECT *FROM log WHERE node = '1' AND date = 'date' AND number >=1
-
-无效的就是这种
-
-	SELECT *FROM log where node = '1' AND number >= 1
+		SELECT *FROM log where node = '1' AND number >= 1
 
 # 总结 #
 
-1. partition key是基于hash，不支持大于，小于范围查询，IN操作的是可以支持的。
+1. partition key是基于hash，不支持大于，小于这种范围查询，IN操作的是支持的。
 
 2. clustering key是排序的，支持IN,大于小于查询。它相当于一个联合索引，所以要想让联合索引生效，得保证前面字段都有。
 
 3. 当没有给定partition key,而给定clustering key，需要扫描所有节点，然后进行过滤。所以执行效率可能比较低。所以Cassandra 要求使用ALLOW FILTERING。当过滤到的数据占查询的数据比例比较高的时候，还比较有效。
-#问题#
+
+# 问题 #
 
 - 问题1:where 语法中支不支持or
 
