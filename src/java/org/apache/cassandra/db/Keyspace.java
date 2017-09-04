@@ -544,6 +544,7 @@ public class Keyspace
                             // This view update can't happen right now. so rather than keep this thread busy
                             // we will re-apply ourself to the queue and try again later
                             final CompletableFuture<?> mark = future;
+                            //  COMMENTS mutation stage
                             StageManager.getStage(Stage.MUTATION).execute(() ->
                                                                           applyInternal(mutation, writeCommitLog, true, isDroppable, true, mark)
                             );

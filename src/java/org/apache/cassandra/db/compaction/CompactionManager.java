@@ -1653,6 +1653,7 @@ public class CompactionManager implements CompactionManagerMBean
                 }
                 try
                 {
+                    // FS_COMPACTION 这地方为什么要做compaction，而且等待完成
                     metrics.beginCompaction(writer);
                     try
                     {

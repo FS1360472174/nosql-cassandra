@@ -138,12 +138,14 @@ public class AutoSavingCache<K extends CacheKey, V> extends InstrumentingCache<K
             saveTask.cancel(false); // Do not interrupt an in-progress save
             saveTask = null;
         }
+
         if (savePeriodInSeconds > 0)
         {
             Runnable runnable = new Runnable()
             {
                 public void run()
                 {
+                    // FS_COMMENTS 这个是一个带返回值的异步
                     submitWrite(keysToSave);
                 }
             };
